@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WebApplication10.Filters;
+using WebApplication10.TokenAuthentication;
 
 namespace WebApplication10
 {
@@ -17,6 +18,8 @@ namespace WebApplication10
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ITokenManager, TokenManager>();
+
             services.AddControllers( options => {
                 options.Filters.Add<DebugResourceFilter>();
                 options.Filters.Add<VersionDiscontinueResourceFilter>();

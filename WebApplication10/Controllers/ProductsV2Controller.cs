@@ -12,6 +12,7 @@ namespace WebApplication10.Controllers
     [ApiController]
     [Route("api/v2/products")]       
     [DebugResourceFilter2]
+    [TokenAuthenticationFilter]
     public class ProductsV2Controller : ControllerBase
     {
         //[HttpGet]
