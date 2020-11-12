@@ -1,9 +1,11 @@
-﻿namespace WebApplication10.TokenAuthentication
+﻿using System.Security.Claims;
+
+namespace WebApplication10.TokenAuthentication
 {
     public interface ITokenManager
     {
         bool Authenticate(string userName, string password);
-        Token NewToken();
-        bool VerifyToken(string token);
+        string NewToken();
+        ClaimsPrincipal VerifyToken(string token);
     }
 }

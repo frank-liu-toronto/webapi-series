@@ -1,17 +1,23 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace WebApplication10.TokenAuthentication
 {
     public class TokenManager : ITokenManager
     {
-        private List<Token> listTokens;
+        private JwtSecurityTokenHandler tokenHandler;
+        private byte[] secretKey;
 
         public TokenManager()
         {
-            listTokens = new List<Token>();
+            tokenHandler = new JwtSecurityTokenHandler();
+            secretKey = Encoding.ASCII.GetBytes("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
         }
 
         public bool Authenticate(string userName, string password)
@@ -25,27 +31,34 @@ namespace WebApplication10.TokenAuthentication
                 return false;
         }
 
-        public Token NewToken()
+        public string NewToken()
         {
-            var token = new Token
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Value = Guid.NewGuid().ToString(),
-                ExpiryDate = DateTime.Now.AddMinutes(1)
+                Subject = new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Name, "Frank Liu")}),
+                Expires = DateTime.UtcNow.AddMinutes(1),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(secretKey),
+                    SecurityAlgorithms.HmacSha256Signature)
             };
-
-            listTokens.Add(token);
-            return token;
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var jwtString = tokenHandler.WriteToken(token);
+            return jwtString;
         }
 
-        public bool VerifyToken(string token)
+        public ClaimsPrincipal VerifyToken(string token)
         {
-            if (listTokens.Any(x => x.Value == token
-                && x.ExpiryDate > DateTime.Now))
-            {
-                return true;
-            }
-
-            return false;
+            var claims = tokenHandler.ValidateToken(token,
+                new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+                    ValidateLifetime = true,
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+            return claims;
         }
     }
 }
