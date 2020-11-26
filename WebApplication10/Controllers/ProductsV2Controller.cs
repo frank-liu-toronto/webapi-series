@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,8 @@ namespace WebApplication10.Controllers
     [ApiController]
     [Route("api/v2/products")]       
     [DebugResourceFilter2]
-    [TokenAuthenticationFilter]
+    //[TokenAuthenticationFilter]
+    [Authorize]
     public class ProductsV2Controller : ControllerBase
     {
         //[HttpGet]
